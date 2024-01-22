@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <!-- Include the CesiumJS JavaScript and CSS files -->
+  <link rel="stylesheet" type="text/css" href="./style.css" />
+  <script src="https://cesium.com/downloads/cesiumjs/releases/1.111/Build/Cesium/Cesium.js"></script>
+  <link href="https://cesium.com/downloads/cesiumjs/releases/1.111/Build/Cesium/Widgets/widgets.css" rel="stylesheet" />
+  <script src="./libs/Cesium-1.108/Build/Cesium/Cesium.js"></script>
+  <script src="./libs/Cesium-1.108/Apps/Sandcastle/Sandcastle-header.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.js"
+    integrity="sha512-rozBdNtS7jw9BlC76YF1FQGjz17qQ0J/Vu9ZCFIW374sEy4EZRbRcUZa2RU/MZ90X2mnLU56F75VfdToGV0RiA=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link rel="stylesheet" href="./fontawesome-free-6.1.2-web/css/all.css" />
+  <style>
+    @import url(localhost:8080/3d/libs/Cesium-1.111/Apps/Sandcastle/CesiumSandcastle.css);
+
+    @import url(localhost:8080/3d/libs/Cesium-1.111/Apps/Sandcastle/templates/bucket.css);
+  </style>
+</head>
+
+<body>
+  <div id="cesiumContainer" class="fullSize"></div>
+  <script type="text/javascript">
+
+    var viewer = new Cesium.Viewer("cesiumContainer", {
+      shouldAnimate: true,
+    });
+    
+
+    // Load and display GeoJSON data with extrusion
+
+    var bidenSource = Cesium.GeoJsonDataSource.load("Biden precincts.geojson", {
+    stroke: new Cesium.Color(1.0, 0.0, 0.0, 1.0), // Black color with full opacity
+    strokeWidth: 40.0, // Increase the stroke width to 20.0 (or any other value you prefer)
+    fill: new Cesium.Color(0.0, 0.0, 1.0, 0.5), // Blue color with 50% transparency
+    extrudedHeight: 0.1, // Adjust the extrusion height as needed
+});
+
+
+    var trumpSource = Cesium.GeoJsonDataSource.load("Trump precincts.geojson", {
+    stroke: new Cesium.Color(0.0, 1.0, 0.0, 1.0), // Black color with full opacity
+    strokeWidth: 40.0, // Increase the stroke width to 3.0
+    fill: new Cesium.Color(1.0, 0.0, 0.0, 0.5), // Red color with 50% transparency
+    extrudedHeight: 0.1, // Adjust the extrusion height as needed
+});
+
+
+    viewer.dataSources.add(bidenSource);
+    viewer.dataSources.add(trumpSource);
+
+  // County Boundry
+  var boundrySource = Cesium.GeoJsonDataSource.load("connty boundry.geojson", {
+    stroke: Cesium.Color.BLACK, // Change stroke color to black
+    strokeWidth: 5,
+    fill: Cesium.Color.BLACK.withAlpha(0.5), // Change fill color to black with 50% transparency
+    extrudedHeight: 0.1,
+});
+viewer.dataSources.add(boundrySource);
+
+
+
+
+// Building Geojson data display
+Cesium.GeoJsonDataSource.load("2.geojson", {
+  stroke: Cesium.Color.BLACK,
+  fill: Cesium.Color.RED,
+  extrudedHeight: 300 // Adjust the extrusion height as needed
+})
+  .then(function(dataSource) {
+    viewer.dataSources.add(dataSource);
+
+    //Get the array of entities
+    var entities = dataSource.entities.values;
+
+    var colorHash = {};
+    for (var i = 0; i < entities.length; i++) {
+          //For each entity, create a random color based on the state name.
+          //Some states have multiple entities, so we store the color in a
+          //hash so that we use the same color for the entire state.
+          var entity = entities[i];
+          var name = entity.id;
+          var color = colorHash[name];
+          if (!color) {
+              color = Cesium.Color.fromRandom({
+                  alpha: 1.0,
+              });
+              // color = Cesium.Color.RED;
+              colorHash[name] = color;
+          }
+
+          //Set the polygon material to our random color.
+          entity.polygon.material = color;
+          //Remove the outlines.
+          entity.polygon.outline = false;
+
+          //Extrude the polygon based on the state's population.  Each entity
+          //stores the properties for the GeoJSON feature it was created from
+          //Since the population is a huge number, we divide by 50.
+          // viewer.scene.primitives.add(Cesium.createf10.geojson());
+          entity.polygon.extrudedHeight = 100,
+              entity.properties.Height;
+      }
+  })
+ ;
+
+ Cesium.GeoJsonDataSource.load("2.geojson", {
+  stroke: Cesium.Color.BLACK,
+  fill: Cesium.Color.RED,
+  extrudedHeight: 300 // Adjust the extrusion height as needed
+})
+  .then(function(dataSource) {
+    viewer.dataSources.add(dataSource);
+
+    //Get the array of entities
+    var entities = dataSource.entities.values;
+
+    var colorHash = {};
+    for (var i = 0; i < entities.length; i++) {
+          //For each entity, create a random color based on the state name.
+          //Some states have multiple entities, so we store the color in a
+          //hash so that we use the same color for the entire state.
+          var entity = entities[i];
+          var name = entity.id;
+          var color = colorHash[name];
+          if (!color) {
+              color = Cesium.Color.fromRandom({
+                  alpha: 1.0,
+              });
+              colorHash[name] = color;
+          }
+
+          //Set the polygon material to our random color.
+          entity.polygon.material = color;
+          //Remove the outlines.
+          entity.polygon.outline = false;
+
+          //Extrude the polygon based on the state's population.  Each entity
+          //stores the properties for the GeoJSON feature it was created from
+          //Since the population is a huge number, we divide by 50.
+          // viewer.scene.primitives.add(Cesium.createf10.geojson());
+          entity.polygon.extrudedHeight = 100,
+              entity.properties.Height;
+      }
+  })
+ ;
+
+var trumpSource = Cesium.GeoJsonDataSource.load("trump plot.geojson", {
+    stroke: Cesium.Color.BLACK,
+    fill: Cesium.Color.RED,
+    extrudedHeight: 300 // Adjust the extrusion height as needed
+});
+
+
+viewer.dataSources.add(trumpSource);
+
+
+var bidenSource = Cesium.GeoJsonDataSource.load("biden plot.geojson", {
+    stroke: Cesium.Color.BLACK,
+    fill: Cesium.Color.BLUE,
+    extrudedHeight: 300 // Adjust the extrusion height as needed
+});
+
+viewer.dataSources.add(bidenSource);
+
+
+    // Start off looking at Florida.
+    viewer.camera.setView({
+      destination: Cesium.Rectangle.fromDegrees(-87.6348, 24.396308, -79.9743, 31.00000), // Florida's bounding box
+    });
+  </script>
+</body>
+
+</html>
